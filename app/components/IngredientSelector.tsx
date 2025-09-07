@@ -144,7 +144,7 @@ export default function IngredientSelector({ onClose, onIngredientsSelected }: I
           <div className="space-y-3 mb-6 max-h-60 overflow-y-auto">
             {filteredIngredients.length === 0 ? (
               <p className="text-gray-500 text-center py-4">
-                No ingredients found matching "{searchTerm}"
+                No ingredients found matching &quot;{searchTerm}&quot;
               </p>
             ) : (
               filteredIngredients.map(ingredient => (
