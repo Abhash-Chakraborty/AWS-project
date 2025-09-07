@@ -1,4 +1,4 @@
-import Auth from './components/Auth'
+import RecipeGenerator from './components/RecipeGenerator'
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
         </p>
       </div>
       
-      <Auth />
+      <RecipeGenerator />
     </main>
   )
 }

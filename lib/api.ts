@@ -1,6 +1,3 @@
-import { post } from 'aws-amplify/api'
-import { getCurrentUser } from 'aws-amplify/auth'
-
 // Type definitions for API responses
 export interface Recipe {
   recipe_id: number
@@ -48,22 +45,20 @@ export class RecipeAPI {
   }
 
   /**
-   * Analyze image to extract ingredients
+   * Analyze image to extract ingredients (mock implementation)
    */
   static async analyzeImage(imageData: string): Promise<string[]> {
     try {
-      const response = await post({
-        apiName: this.API_NAME,
-        path: '/analyze-image',
-        options: {
-          body: {
-            image_data: imageData
-          }
-        }
-      }).response
+      // Mock image analysis - return common ingredients
+      // In a real implementation, this would send to an AI service
+      const mockIngredients = [
+        'Tomato', 'Onion', 'Garlic', 'Bell Pepper', 'Cheese'
+      ]
       
-      const result = await response.body.json()
-      return result as string[]
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      return mockIngredients
     } catch (error) {
       console.error('Error analyzing image:', error)
       throw new Error('Failed to analyze image')
@@ -75,19 +70,10 @@ export class RecipeAPI {
    */
   static async searchByIngredients(ingredients: string[]): Promise<ProcessedRecipe[]> {
     try {
-      const response = await post({
-        apiName: this.API_NAME,
-        path: '/search-by-ingredients',
-        options: {
-          body: {
-            ingredients
-          }
-        }
-      }).response
-      
-      const result = await response.body.json()
-      // Process the raw API response
-      return this.processRecipes(result as unknown as Recipe[])
+      // Use mock data for demo purposes
+      console.log('Searching recipes for ingredients:', ingredients)
+      // Return mock recipes based on ingredients
+      return this.getMockRecipesByIngredients(ingredients)
     } catch (error) {
       console.error('Error searching recipes:', error)
       throw new Error('Failed to search recipes')
@@ -95,31 +81,100 @@ export class RecipeAPI {
   }
 
   /**
-   * Get personalized recommendations for the current user
+   * Get mock recipes based on ingredients for demo purposes
+   */
+  private static getMockRecipesByIngredients(ingredients: string[]): ProcessedRecipe[] {
+    const allMockRecipes = [
+      {
+        recipe_id: 1,
+        name: "Spaghetti Aglio e Olio",
+        ingredients: ["Pasta", "Garlic", "Olive Oil", "Black Pepper"],
+        steps: ["Boil pasta", "Sauté garlic in olive oil", "Toss pasta with oil", "Season with pepper", "Serve immediately"],
+        image_url: "https://images.unsplash.com/photo-1621996346565-e3dbc638d517?w=400"
+      },
+      {
+        recipe_id: 2,
+        name: "Scrambled Eggs",
+        ingredients: ["Eggs", "Butter", "Salt", "Black Pepper"],
+        steps: ["Beat eggs", "Heat butter in pan", "Add eggs to pan", "Scramble gently", "Season and serve"],
+        image_url: "https://images.unsplash.com/photo-1582169296194-c4146cdc2b95?w=400"
+      },
+      {
+        recipe_id: 3,
+        name: "Tomato Basil Salad",
+        ingredients: ["Tomato", "Basil", "Olive Oil", "Salt"],
+        steps: ["Slice tomatoes", "Chop basil", "Drizzle with olive oil", "Season with salt", "Let flavors meld"],
+        image_url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400"
+      },
+      {
+        recipe_id: 4,
+        name: "Grilled Chicken Breast",
+        ingredients: ["Chicken", "Olive Oil", "Salt", "Black Pepper", "Garlic"],
+        steps: ["Season chicken", "Heat grill", "Cook 6-7 minutes per side", "Check internal temperature", "Rest before serving"],
+        image_url: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400"
+      },
+      {
+        recipe_id: 5,
+        name: "Rice Pilaf",
+        ingredients: ["Rice", "Onion", "Butter", "Salt"],
+        steps: ["Sauté onion in butter", "Add rice and toast", "Add water and salt", "Simmer covered", "Fluff with fork"],
+        image_url: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400"
+      }
+    ]
+
+    // Filter recipes that contain at least one of the selected ingredients
+    const filteredRecipes = allMockRecipes.filter(recipe =>
+      recipe.ingredients.some(ingredient =>
+        ingredients.some(selected => 
+          ingredient.toLowerCase().includes(selected.toLowerCase()) ||
+          selected.toLowerCase().includes(ingredient.toLowerCase())
+        )
+      )
+    )
+
+    return filteredRecipes.length > 0 ? filteredRecipes : allMockRecipes.slice(0, 3)
+  }
+
+  /**
+   * Get personalized recommendations (no authentication required)
    */
   static async getRecommendations(): Promise<ProcessedRecipe[]> {
     try {
-      // Get the current authenticated user
-      const user = await getCurrentUser()
-      const userId = user.username // or user.userId for Cognito user ID
-      
-      const response = await post({
-        apiName: this.API_NAME,
-        path: '/recommendations',
-        options: {
-          body: {
-            user_id: userId
-          }
-        }
-      }).response
-      
-      const result = await response.body.json()
-      // Process the raw API response
-      return this.processRecipes(result as unknown as Recipe[])
+      // Return mock recommendations without authentication
+      return this.getMockRecommendations()
     } catch (error) {
       console.error('Error getting recommendations:', error)
       throw new Error('Failed to get personalized recommendations')
     }
+  }
+
+  /**
+   * Get mock recommendations for demo purposes
+   */
+  private static getMockRecommendations(): ProcessedRecipe[] {
+    return [
+      {
+        recipe_id: 1,
+        name: "Quick Pasta Carbonara",
+        ingredients: ["Pasta", "Eggs", "Cheese", "Bacon", "Black Pepper"],
+        steps: ["Boil pasta", "Cook bacon", "Mix eggs and cheese", "Combine all ingredients", "Serve hot"],
+        image_url: "https://images.unsplash.com/photo-1621996346565-e3dbc638d517?w=400"
+      },
+      {
+        recipe_id: 2,
+        name: "Fresh Garden Salad",
+        ingredients: ["Lettuce", "Tomato", "Cucumber", "Olive Oil", "Lemon"],
+        steps: ["Wash vegetables", "Chop lettuce and tomato", "Slice cucumber", "Make dressing", "Toss and serve"],
+        image_url: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400"
+      },
+      {
+        recipe_id: 3,
+        name: "Chicken Stir Fry",
+        ingredients: ["Chicken", "Bell Pepper", "Onion", "Garlic", "Rice"],
+        steps: ["Cook rice", "Cut chicken and vegetables", "Heat oil in pan", "Stir fry ingredients", "Serve over rice"],
+        image_url: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400"
+      }
+    ]
   }
 
   /**
