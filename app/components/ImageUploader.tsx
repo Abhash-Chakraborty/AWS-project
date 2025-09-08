@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import Image from 'next/image'
 import { RecipeAPI } from '../../lib/api'
 
 interface ImageUploaderProps {
@@ -57,9 +58,8 @@ export default function ImageUploader({ onImageAnalyzed }: ImageUploaderProps) {
       reader.readAsDataURL(file)
       reader.onload = () => {
         const result = reader.result as string
-        // Remove data:image/jpeg;base64, prefix
-        const base64 = result.split(',')[1]
-        resolve(base64)
+        // Keep the full data URL format as expected by AWS Rekognition
+        resolve(result)
       }
       reader.onerror = reject
     })
@@ -73,10 +73,10 @@ export default function ImageUploader({ onImageAnalyzed }: ImageUploaderProps) {
     try {
       const base64Image = await fileToBase64(selectedImage)
       
-      // Call the real API endpoint
+      // Call the live API endpoint to analyze the image
       const ingredients = await RecipeAPI.analyzeImage(base64Image)
       
-      // Pass the ingredients back to the parent component
+      // Pass the ingredients back to the parent component for chained recipe search
       onImageAnalyzed(ingredients)
       
     } catch (error) {
@@ -129,9 +129,11 @@ export default function ImageUploader({ onImageAnalyzed }: ImageUploaderProps) {
       {selectedImage && imagePreview && (
         <div className="space-y-4">
           <div className="relative">
-            <img
+            <Image
               src={imagePreview}
               alt="Uploaded food"
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-lg shadow-md"
             />
             <button

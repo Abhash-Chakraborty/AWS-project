@@ -1,22 +1,41 @@
 # Recipe AI - Smart Recipe Recommendations
 
-A modern, lightweight Next.js application that provides intelligent recipe recommendations based on user-selected ingredients or uploaded food images. **No authentication required** - just start cooking!
+A modern Next.js application that provides intelligent recipe recommendations with secure AWS Cognito authentication and real API integration.
 
-## Features
+## ✨ Features
 
-- **Ingredient-based Search**: Select from a list of common ingredients to find matching recipes
-- **Image Analysis**: Upload food photos to automatically detect ingredients and suggest recipes (simulated with smart mock data)
-- **Responsive Design**: Clean, minimalist interface that works on all devices
-- **Real-time Results**: Fast recipe discovery with loading states and error handling
-- **No Sign-up Required**: Jump straight into finding recipes without any barriers
+- **🔐 Secure Authentication**: AWS Cognito integration with beautiful custom UI
+- **🥘 Ingredient-based Search**: Find recipes by selecting ingredients
+- **📸 Image Analysis**: Upload food photos to detect ingredients (AWS Rekognition)
+- **🎨 Beautiful Design**: Modern gradients, glassmorphism effects, and responsive layout
+- **⚡ Real-time Results**: Fast API responses with loading states
+- **☁️ AWS Powered**: Full backend integration with AWS services
+
+## 🚀 Quick Setup
+
+1. **Clone and Install**:
+   ```bash
+   git clone <your-repo>
+   cd Recipe-AI
+   npm install
+   ```
+
+2. **AWS Setup**: Follow the [**SIMPLE_AWS_SETUP.md**](SIMPLE_AWS_SETUP.md) guide (takes 5 minutes)
+
+3. **Run the App**:
+   ```bash
+   npm run dev
+   ```
 
 ## Tech Stack
 
 - **Framework**: Next.js 14 with App Router
+- **Authentication**: AWS Cognito with Amplify UI
+- **Backend**: AWS API Gateway + Lambda functions
+- **Database**: Amazon DynamoDB
+- **AI**: Amazon Rekognition for image analysis
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: React Hooks
-- **No Backend Dependencies**: Runs entirely in the browser with smart mock data
+- **Styling**: Tailwind CSS with custom gradients
 
 ## Getting Started
 

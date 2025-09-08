@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import { RecipeAPI, ProcessedRecipe } from '../../lib/api'
+import { useAuth, LoginModal, UserProfile } from './UserAuth'
 import IngredientSelector from './IngredientSelector'
 import ImageUploader from './ImageUploader'
 import RecipeCard from './RecipeCard'
 import RecipeDisplay from './RecipeDisplay'
 
 export default function RecipeGenerator() {
+  const { user, login, logout, isAuthenticated } = useAuth()
   const [currentView, setCurrentView] = useState<'initial' | 'options' | 'results'>('initial')
   const [recipes, setRecipes] = useState<ProcessedRecipe[]>([])
   const [loading, setLoading] = useState(false)
@@ -15,23 +17,25 @@ export default function RecipeGenerator() {
   const [showIngredientModal, setShowIngredientModal] = useState(false)
   const [selectedRecipe, setSelectedRecipe] = useState<ProcessedRecipe | null>(null)
   const [showRecipeModal, setShowRecipeModal] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
-  // Handle initial "Find a Recipe" button click
+  // Handle initial "Find Recipes by Ingredients" button click
   const handleFindRecipe = () => {
     setCurrentView('options')
   }
 
-  // Handle "Surprise Me!" button click
+  // Handle "Surprise Me!" button click - get general recommendations
   const handleSurpriseMe = async () => {
     setLoading(true)
     setError(null)
     setCurrentView('results')
 
     try {
-      const recommendedRecipes = await RecipeAPI.getRecommendations()
+      const userId = isAuthenticated ? user?.id : undefined
+      const recommendedRecipes = await RecipeAPI.getRecommendations(userId)
       setRecipes(recommendedRecipes)
     } catch (err) {
-      setError('Failed to get personalized recommendations. Please try again.')
+      setError('Failed to get recipe recommendations. Please try again.')
       console.error('Error getting recommendations:', err)
     } finally {
       setLoading(false)
@@ -90,6 +94,23 @@ export default function RecipeGenerator() {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6">
+      {/* User Authentication Bar */}
+      <div className="mb-6 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">Recipe AI</h1>
+        <div>
+          {isAuthenticated ? (
+            <UserProfile user={user!} onLogout={logout} />
+          ) : (
+            <button
+              onClick={() => setShowLoginModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+            >
+              Sign In
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Initial State */}
       {currentView === 'initial' && (
         <div className="text-center space-y-4">
@@ -97,7 +118,7 @@ export default function RecipeGenerator() {
             onClick={handleFindRecipe}
             className="bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold px-12 py-4 rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
           >
-            Find a Recipe
+            Find Recipes by Ingredients
           </button>
           
           <div className="text-gray-600 text-sm">or</div>
@@ -109,7 +130,7 @@ export default function RecipeGenerator() {
             Surprise Me! 🎲
           </button>
           <p className="text-gray-500 text-sm mt-2">
-            Get personalized recommendations based on your profile
+            Get recipe recommendations or search by your ingredients
           </p>
         </div>
       )}
@@ -202,6 +223,14 @@ export default function RecipeGenerator() {
         <RecipeDisplay
           recipe={selectedRecipe}
           onClose={() => setShowRecipeModal(false)}
+        />
+      )}
+
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onLogin={login}
         />
       )}
     </div>

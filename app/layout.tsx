@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import ConfigureAmplifyClientSide from './components/ConfigureAmplify'
 
 export const metadata: Metadata = {
   title: 'Recipe AI - Smart Recipe Recommendations',
@@ -14,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen">
-        <div className="min-h-screen flex flex-col">
+        <ConfigureAmplifyClientSide>
           {children}
-        </div>
+        </ConfigureAmplifyClientSide>
       </body>
     </html>
   )
